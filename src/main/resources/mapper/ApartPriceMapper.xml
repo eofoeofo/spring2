@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.koreait.spring2.ApartPriceMapper">
+    <insert id="insApartmentInfoArr">
+        INSERT INTO  apartment_info
+                      ( deal_amount
+                      ,  build_year
+                      ,   deal_year
+                      ,  deal_month
+                      ,    deal_day
+                      ,        dong
+                  ,  apartment_name
+          , area_for_exclusive_use
+                  ,      parcel_num
+                  ,             flr
+                  , intrn_area_code)
+          VALUES
+          <foreach collection="arr" item="item" open="(" close=")" separator="), (">
+                    #{item.deal_amount}
+              ,      #{item.build_year}
+              ,       #{item.deal_year}
+              ,      #{item.deal_month}
+              ,        #{item.deal_day}
+              ,            #{item.dong}
+              ,  #{item.apartment_name}
+              , #{item.area_for_exclusive_use}
+              ,      #{item.parcel_num}
+              ,             #{item.flr}
+              ,      #{intrn_area_code}
+          </foreach>
+-- intrn_area_code에 item을 주지 않은 이유는 배열을 사용하는게 아니고,
+-- 다른 어딘가의 값을 쓰곘다는 뜻으로 해석가능
+    </insert>
+    <select id="selApartmentInfoList" resultType="com.koreait.spring2.ResultEntity">
+        SELECT                A.*
+            FROM apartment_info A
+       INNER JOIN location_code B
+           ON A.intrn_area_code =    B.intrn_area_code
+        WHERE       A.deal_year =       #{deal_year}
+          AND      A.deal_month =      #{deal_month}
+          AND B.extrn_area_code = #{extrn_area_code}
+    </select>
+    <select id="selLocationCodeList" resultType="com.koreait.spring2.LocationCodeEntity">
+        SELECT intrn_area_code
+             ,       area_name
+             , extrn_area_code
+        FROM     location_code
+    <if test="extrn_area_code != null and extrn_area_code != ''">
+--         if문안에 and는 무조건 소문자 !!
+        WHERE  extrn_area_code = #{extrn_area_code}
+    </if>
+    </select>
+
+<!--    <select id="selResult" resultType="com.koreait.spring2.ResultEntity">-->
+<!--                       SELECT     i_ai-->
+<!--                         , deal_amount-->
+<!--                         ,  build_year-->
+<!--                         ,   deal_year-->
+<!--                         ,  deal_month-->
+<!--                         ,    deal_day-->
+<!--                         ,        dong-->
+<!--                      , apartment_name-->
+<!--              , area_for_exclusive_use-->
+<!--                         ,  parcel_num-->
+<!--                         ,         flr-->
+<!--                     , intrn_area_code-->
+<!--                   FROM apartment_info;-->
+<!--    </select>-->
+</mapper>
